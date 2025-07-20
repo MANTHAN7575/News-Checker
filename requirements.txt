@@ -1,0 +1,25 @@
+# Installation Instructions:
+# Use the -r flag to install from this file:
+# pip install -r requirements.txt
+#
+# NOT: pip install requirements.txt (this will fail)
+#
+# If you get permission errors, try:
+# pip install -r requirements.txt --user
+#
+# For virtual environment (recommended):
+# python -m venv venv
+# venv\Scripts\activate  (Windows) or source venv/bin/activate (Mac/Linux)
+# pip install -r requirements.txt
+#
+# If scikit-learn fails to install due to build tools, try newer version:
+# pip install scikit-learn>=1.4.0
+
+Flask>=2.3.0
+Flask-SQLAlchemy>=3.0.0
+psycopg2-binary>=2.9.0
+pandas>=2.0.0
+scikit-learn>=1.4.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+Werkzeug>=2.3.0

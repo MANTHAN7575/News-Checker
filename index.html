@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NewsGuard - Professional News Verification</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&family=Roboto+Slab:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-blue: #1e40af;
+      --primary-blue-light: #3b82f6;
+      --primary-blue-dark: #1e3a8a;
+      --secondary-gray: #64748b;
+      --success: #059669;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --info: #0284c7;
+      --white: #ffffff;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      --news-red: #c53030; /* Slightly deeper red */
+      --news-gold: #b7791f; /* More subdued gold */
+      
+      --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      --success-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      --danger-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      /* Removed --hero-gradient as it was causing confusion and bg-animation is primary */
+      
+      --glass-bg: rgba(255, 255, 255, 0.1); /* Adjusted for better contrast with new bg */
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --glass-shadow: 0 8px 32px 0 rgba(30, 64, 175, 0.15);
+      
+      --dark-glass-bg: rgba(30, 41, 59, 0.8);
+      --dark-glass-border: rgba(148, 163, 184, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-50); /* Fallback, but bg-animation will cover */
+      min-height: 100vh;
+      color: var(--gray-800);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      /* Professional news-themed gradient */
+      background: linear-gradient(-45deg, #e0f7fa, #f0f4c3, #b3e5fc, #fff9c4);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite; /* Slower, more subtle shift */
+      transition: background 1s ease-in-out;
+    }
+    
+    /* Night Mode Background Override */
+body.dark-mode .bg-animation {
+  background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1a1a2e);
+  animation: gradientNightShift 20s ease infinite;
+}
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes gradientNightShift {
+  0% { background-position: 100% 50%; }
+  50% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+    /* Floating particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px; /* Smaller particles */
+      height: 3px;
+      background: rgba(255, 255, 255, 0.15); /* More subtle particles */
+      border-radius: 50%;
+      animation: drift 25s infinite linear; /* Changed animation to drift */
+    }
+
+    @keyframes float { /* Renaming to drift for clarity, or can remove if drift is preferred */
+      0% {
+        transform: translateY(100vh) translateX(0px);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.7;
+      }
+      90% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-100px) translateX(20px); /* Gentle horizontal movement */
+        opacity: 0;
+      }
+    }
+
+    /* New drift animation for particles */
+    @keyframes drift {
+      0% {
+        transform: translateY(100vh) translateX(0px);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.7;
+      }
+      90% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-100px) translateX(20px); /* Gentle horizontal movement */
+        opacity: 0;
+      }
+    }
+
+    /* News ticker animation */
+    .news-ticker {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.9); /* Darker, more professional ticker */
+      color: var(--gray-200);
+      padding: 0.6rem 0; /* Slightly more padding */
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .ticker-content {
+      display: flex;
+      animation: scroll 40s linear infinite; /* Slower scroll */
+      white-space: nowrap;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .ticker-item {
+      margin-right: 4rem; /* More spacing */
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Enhanced Navigation */
+    .navbar {
+      background: rgba(255, 255, 255, 0.9); /* Slightly less opaque for depth */
+      backdrop-filter: blur(15px); /* Softer blur */
+      border-bottom: 1px solid var(--gray-200);
+      padding: 1rem 0;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      animation: slideDown 0.8s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .navbar-brand {
+      font-family: 'Roboto Slab', serif;
+      font-weight: 700;
+      font-size: 1.9rem; /* Slightly adjusted */
+      color: var(--primary-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .navbar-brand::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--primary-gradient);
+      transition: width 0.3s ease;
+    }
+
+    .navbar-brand:hover::after {
+      width: 100%;
+    }
+
+    .navbar-brand:hover {
+      color: var(--primary-blue-light);
+      transform: translateY(-2px);
+    }
+
+    .navbar-brand i {
+      font-size: 2.1rem; /* Slightly adjusted */
+      color: var(--primary-blue);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); } /* More subtle pulse */
+    }
+
+    .navbar-nav .nav-link {
+      color: var(--gray-700);
+      font-weight: 500;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      margin: 0 0.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .navbar-nav .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent); /* Softer hover effect */
+      transition: left 0.5s ease;
+    }
+
+    .navbar-nav .nav-link:hover::before {
+      left: 100%;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: var(--primary-blue);
+      background: var(--gray-100);
+      transform: translateY(-2px);
+    }
+
+    .navbar-nav .nav-link.active {
+      background: var(--primary-blue);
+      color: white;
+      box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+    }
+
+    /* Hero Section with Video Background Effect */
+    .hero-section {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  color: white;
+  overflow: hidden;
+  z-index: 1;
+  transition: transform 0.3s ease-in-out;
+}
+    @keyframes heroFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  /*left: 50;*/
+  height: 87%;
+  width: 100%;
+  background-image: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWdpb3VldGZrMWRkM2ZiMmNpZjJuZmxpNW96MjA1c25xZ21xb3NzNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o6ZthWzyoIzSknltu/giphy.gif'); /* Day GIF */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  opacity: 1;
+  transition: background-image 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+body.dark-mode .hero-section::before {
+  background-image: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExYW9lYmZlNnVnc2xjYzc4aTFlYXNyazZxNnQycGxoZ2Z6OXVnZWx3dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2yxkSUWYzgnsPje3X8/giphy.gif'); /* Night GIF */
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  /*left: 0;*/
+  width: 100%;
+  height: 87%;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(15, 15, 15, 0.4)); /* Overlay gradient */
+  z-index: -0.5;
+}
+
+    @keyframes backgroundMove {
+      0%, 100% { background-position: 0 0, 30px 30px; }
+      50% { background-position: 60px 60px, 90px 90px; }
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: whitesmoke;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      animation: titleTypewriter 2s ease-out;
+      position: relative;
+      z-index: 2;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Enhanced readability */
+
+    }
+
+    @keyframes titleTypewriter {
+      from {
+        width: 0;
+        opacity: 0;
+      }
+      to {
+        width: 100%;
+        opacity: 1;
+      }
+    }
+    /* rgba(255, 255, 255, 0.85) */
+    .hero-subtitle {
+      font-size: 1.25rem; /* Adjusted size */
+      color: whitesmoke; /* Slightly less opaque for readability */
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      font-weight: 400;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 1s ease-out 0.5s both;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Breaking News Banner */
+    /*.breaking-news {
+      background: var(--news-red);
+      color: white;
+      padding: 0.6rem 0;  
+      text-align: center;
+      font-weight: 600;
+      animation: breakingPulse 2.5s infinite; 
+      position: relative;
+      overflow: hidden;
+    }*/
+    @media (max-width: 600px) {
+    .breaking-news {
+  background: rgba(255, 0, 0, 0.7); /* Semi-transparent red */
+  color: white;
+  padding: 0.6rem 0;
+  text-align: center;
+  font-weight: 600;
+  animation: breakingPulse 2.5s infinite;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(6px); /* Glass effect */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+
+    @keyframes breakingPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255, 0.3); }
+      50% { box-shadow: 0 0 10px 5px rgba(255,255,255, 0.1); }
+    }
+
+    .breaking-text {
+      font-size: 0.85rem;
+      letter-spacing: 0.5px; /* Reduced letter spacing */
+      white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  animation: scrollTicker 10s linear infinite;
+    }
+  }
+    /* Enhanced Trust Indicators */
+    .trust-indicators {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* 2 per row */
+      justify-content: center;
+      justify-items: center;
+      width: 100%;
+      max-width: 700px;
+      gap: 1.2rem;
+      margin: 2rem auto;
+      flex-wrap: wrap;
+      animation: fadeInUp 1s ease-out 1s both;
+      position: relative;
+      z-index: 2;
+    }
+
+    /*.trust-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      color: bright whitesmoke;
+      font-weight: 600;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.08); 
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.3s ease;
+      animation: bounceIn 0.8s ease-out;
+      animation-delay: calc(var(--delay, 0) * 0.2s);
+    }*/
+    .trust-item {
+  background: rgba(0, 0, 0, 0.4); /* More contrast over GIF */
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  border-radius: 0.6rem;
+  transition: all 0.3s ease;
+  text-align: center;
+  line-height: 1.4;
+  min-width: 120px;
+}
+/*.trust-item i {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  font-size: 1.4rem; 
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, var(--gray-200), var(--white));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: iconFloat 3s ease-in-out infinite;
+}*/
+
+    .trust-item:hover {
+      transform: translateY(-6px) scale(1.02); /* Less aggressive hover */
+      box-shadow: 0 12px 30px /*rgba(0, 0, 0, 0.15)*/goldenrod;
+    }
+
+    .trust-item i {
+      font-size: 2.2rem; /* Adjusted icon size */
+      background: linear-gradient(45deg, var(--gray-200), var(--white)); /* Brighter icon gradient */
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); } /* More subtle float */
+    }
+
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(180deg);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.1) rotate(0deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    /* News Grid Background Effect */
+    /*.news-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), 
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 60px 60px; 
+      animation: gridMove 20s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); } 
+    }*/
+
+    /* Enhanced Analysis Card */
+    
+    .analysis-card {
+      background: rgba(255, 255, 255, 0.98); /* Almost opaque for readability */
+      backdrop-filter: blur(10px); /* Subtle blur */
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin: 1rem;
+      position: relative;
+      overflow: hidden;
+      animation: cardSlideIn 1s ease-out 0.5s both;
+    }
+
+    @keyframes cardSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(100px) rotateX(20deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+      }
+    }
+
+    .analysis-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary-gradient);
+      animation: progressBar 3s ease-in-out infinite;
+    }
+
+    @keyframes progressBar {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+
+    .card-header {
+      border-bottom: 2px solid var(--gray-100);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .card-title i {
+      color: var(--primary-blue);
+      animation: searchPulse 2s infinite;
+    }
+
+    @keyframes searchPulse {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.1) rotate(3deg); } /* More subtle pulse */
+    }
+
+    .card-description {
+      color: var(--gray-600);
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+  
+    /* Enhanced Form Elements */
+    .form-group {
+      margin-bottom: 2rem;
+      animation: slideInLeft 0.8s ease-out 1s both;
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 0.5rem;
+      display: block;
+      font-size: 1rem;
+      position: relative;
+    }
+
+    .form-label::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 30px;
+      height: 3px;
+      background: var(--primary-gradient);
+      border-radius: 2px;
+    }
+
+    .form-control {
+      background: var(--gray-50); /* Solid background for better readability */
+      border: 2px solid var(--gray-200);
+      border-radius: 15px;
+      padding: 1rem /*2rem*/;
+      font-size: 0.95rem;
+      color: var(--gray-800);
+      transition: all 0.4s ease;
+      min-height: 150px;
+      resize: vertical;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+      background: white;
+      transform: translateY(-2px);
+    }
+
+    .form-control::placeholder {
+      color: var(--gray-400);
+      font-style: italic;
+    }
+
+    /* Animated Buttons */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+      justify-content: center;
+      margin-top: 2.5rem;
+      animation: slideInUp 0.8s ease-out 1.2s both;
+    }
+
+    .btn {
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: white;
+      box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-blue-dark);
+      transform: translateY(-4px) rotateX(5deg); /* More subtle 3D effect */
+      box-shadow: 0 12px 30px rgba(30, 64, 175, 0.35);
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: 2px solid var(--gray-200);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-200);
+      color: var(--gray-800);
+      transform: translateY(-3px);
+    }
+
+    .btn-info {
+      background: var(--info);
+      color: white;
+      box-shadow: 0 8px 25px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-info:hover {
+      background: #0369a1;
+      transform: translateY(-4px) rotateX(5deg); /* More subtle 3D effect */
+      box-shadow: 0 12px 30px rgba(2, 132, 199, 0.35);
+    }
+
+    /* Enhanced Result Cards */
+    .result-card {
+      margin-top: 2rem;
+      padding: 2.5rem;
+      border-radius: 20px;
+      border-left: 6px solid;
+      position: relative;
+      animation: resultSlideIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px); /* Subtle blur */
+      overflow: hidden;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent); /* More subtle ripple */
+      border-radius: 50%;
+      animation: ripple 3s infinite;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    @keyframes resultSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100px) rotateY(45deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) rotateY(0deg);
+      }
+    }
+
+    .result-fake {
+      background: rgba(220, 38, 38, 0.08); /* Slightly adjusted opacity */
+      border-left-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .result-real {
+      background: rgba(5, 150, 105, 0.08); /* Slightly adjusted opacity */
+      border-left-color: var(--success);
+      color: var(--success);
+    }
+
+    .result-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .result-title i {
+      font-size: 2rem;
+      animation: resultIconBounce 1s ease-out;
+    }
+
+    @keyframes resultIconBounce {
+      0% { transform: scale(0) rotate(180deg); }
+      50% { transform: scale(1.3) rotate(0deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+  
+    /* Loading Animation */
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .loading.active {
+      display: block;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--gray-200);
+      border-top: 4px solid var(--primary-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main Content */
+    .main-section {
+      padding: 2rem 0 5rem;
+      min-height: calc(100vh - 200px);
+      position: relative;
+    }
+
+    .content-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Info Section */
+    .info-section {
+      background: rgba(255, 255, 255, 0.98); /* Almost opaque */
+      backdrop-filter: blur(10px);
+      padding: 4rem 0;
+      margin-top: 3rem;
+      border-top: 1px solid var(--gray-200);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="0.5" fill="%23cbd5e1" opacity="0.2"/></svg>'); /* More subtle dots */
+      background-size: 25px 25px; /* Adjusted size */
+      animation: dotMove 10s linear infinite;
+    }
+
+    @keyframes dotMove {
+      0% { transform: translateX(0) translateY(0); }
+      100% { transform: translateX(25px) translateY(25px); } /* Match new size */
+    }
+
+    .info-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .info-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: var(--gray-900);
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      from { text-shadow: 0 0 8px rgba(30, 64, 175, 0.2); } /* More subtle glow */
+      to { text-shadow: 0 0 15px rgba(30, 64, 175, 0.4); }
+    }
+
+    .info-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--gray-600);
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    /* Theme Toggle */
+  
+      .theme-toggle {
+  position: fixed;
+  top: 80px; /* Adjusted to move below navbar */
+  right: 1.5rem; /* Keeps it at top right */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(15px);
+  border: 2px solid var(--gray-200);
+  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+  z-index: 1001;
+  color: var(--gray-600);
+  animation: subtleFloat 3.5s ease-in-out infinite; /* keep animation intact */
+}
+
+
+    
+
+    @keyframes subtleFloat { /* Renamed from float to avoid conflict, more subtle */
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.15) rotateY(180deg); /* Adjusted hover */
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      color: var(--primary-blue);
+    }
+
+    /* Footer */
+    .footer {
+      background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+      padding: 3rem 0;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent 35%, rgba(255, 255, 255, 0.03) 50%, transparent 65%); /* More subtle shine */
+      animation: footerShine 8s infinite;
+    }
+
+    @keyframes footerShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .logout-btn {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 1.2rem 2.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.4s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+      position: relative;
+      z-index: 2;
+    }
+
+    .logout-btn:hover {
+      background: var(--primary-blue-dark);
+      color: white;
+      transform: translateY(-4px) scale(1.03); /* More subtle hover */
+      box-shadow: 0 15px 40px rgba(30, 64, 175, 0.4);
+    }
+
+    /* Dark Mode */
+    .dark-mode {
+      background: linear-gradient(135deg, var(--gray-900) 0%, #111827 100%); /* Darker dark mode */
+      color: var(--gray-100);
+    }
+
+    .dark-mode .navbar {
+      background: rgba(15, 23, 42, 0.95); /* Darker navbar in dark mode */
+      border-bottom-color: var(--gray-700);
+    }
+
+    .dark-mode .analysis-card {
+      background: var(--gray-800); /* Consistent dark card */
+      border-color: var(--gray-700);
+      color: var(--gray-100);
+    }
+
+    .dark-mode .form-control {
+      background: var(--gray-700); /* Consistent dark form */
+      border-color: var(--gray-600);
+      color: var(--gray-100);
+    }
+
+    .dark-mode .info-section {
+      background: var(--gray-800); /* Consistent dark info section */
+      border-top-color: var(--gray-700);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .analysis-card {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+        border-radius: 15px;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .trust-indicators {
+        gap: 1.5rem;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .trust-item {
+        width: 200px;
+      }
+
+      .particles {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .analysis-card {
+        padding: 1.5rem 1rem;
+      }
+      
+      .form-control {
+        padding: 1rem;
+        min-height: 150px;
+      }
+      
+      .btn {
+        padding: 1rem 1.5rem;
+      }
+      
+      .theme-toggle {
+        width: 3rem;
+        height: 3rem;
+        bottom: 5rem;
+        right: 0.5rem;
+      }
+
+      .news-ticker {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-animation"></div>
+  
+  <!-- Floating Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- News Ticker -->
+  <div class="news-ticker">
+    <div class="ticker-content">
+      <span class="ticker-item">🔴 LIVE: Advanced AI technology detecting misinformation in real-time</span>
+      <span class="ticker-item">📊 99.2% accuracy rate in news verification</span>
+      <span class="ticker-item">🛡️ Protecting users from fake news since 2024</span>
+      <span class="ticker-item">🌐 Trusted by journalists and fact-checkers worldwide</span>
+    </div>
+  </div>
+
+
+
+  <!-- Professional Navigation -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-shield-check"></i>
+        NewsGuard
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">
+              <i class="fas fa-home"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/my_predictions">
+              <i class="fas fa-history"></i> History
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">
+              <i class="fas fa-info-circle"></i> About
+            </a>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link">
+              <i class="fas fa-user"></i> {{ session.username if session.username else 'User' }}
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+    <i class="fas fa-moon"></i>
+  </button>
+  
+  <!-- Main Content -->
+  <main class="main-section">
+    <div class="container">
+      <div class="content-container">
+        <!-- Hero Section -->
+        <!--section class="hero-section">
+          <h1 class="hero-title">Welcome to Fake News Detector</h1>
+          <p class="hero-subtitle">Enter a news headline below to check if it's real or fake</p>
+        </section-->
+        
+        <div class="hero-section">
+          <div class="news-grid"></div>
+          <h1 class="hero-title">Professional News Verification</h1>
+          <!--p class="hero-subtitle">
+            Advanced AI-powered analysis to help you identify misinformation and verify news authenticity with confidence in the digital age.
+          </p-->
+          
+          <div class="trust-indicators">
+            <div class="trust-item" style="--delay: 0">
+              <i class="fas fa-brain"></i>
+              <span>AI-Powered Analysis</span>
+            </div>
+            <div class="trust-item" style="--delay: 1">
+              <i class="fas fa-shield-check"></i>
+              <span>Secure & Private</span>
+            </div>
+            <div class="trust-item" style="--delay: 2">
+              <i class="fas fa-clock"></i>
+              <span>Real-time Detection</span>
+            </div>
+            <div class="trust-item" style="--delay: 3">
+              <i class="fas fa-chart-line"></i>
+              <span>99%+ Accuracy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analysis Card -->
+        <div class="analysis-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-search"></i>
+              Intelligent Content Analysis
+            </h2>
+            <p class="card-description">
+              Submit any news article, headline, or content for comprehensive authenticity verification using our advanced machine learning algorithms.
+            </p>
+          </div>
+
+          {% if error %}
+          <div class="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ error }}
+          </div>
+          {% endif %}
+
+          <form method="POST" action="{{ url_for('predict') }}" id="newsForm">
+            <div class="form-group">
+              <label for="news_text" class="form-label">
+                📰 News Content for Verification
+              </label>
+              <textarea 
+                class="form-control" 
+                id="news_text" 
+                name="news_text" 
+                rows="8" 
+                required
+                placeholder="Paste the news article, headline, or any content you want to analyze for authenticity. Our AI will examine language patterns, fact consistency, and credibility indicators to provide you with a comprehensive verification report..."
+              >{{ input_text if input_text else '' }}</textarea>
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+              <div class="loading-spinner"></div>
+              <p>Analyzing content with advanced AI algorithms...</p>
+            </div>
+
+            <div class="btn-group">
+              <button type="submit" class="btn btn-primary" id="analyzeBtn">
+                <i class="fas fa-search"></i> Analyze Content
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="clearInput()">
+                <i class="fas fa-eraser"></i> Clear
+              </button>
+            </div>
+          </form>
+
+          {% if prediction %}
+          <div class="result-card {% if prediction == 'FAKE' %}result-fake{% else %}result-real{% endif %}" id="predictionResult">
+            <h3 class="result-title">
+              {% if prediction == 'FAKE' %}
+                <i class="fas fa-exclamation-triangle"></i> Potential Misinformation Detected
+              {% else %}
+                <i class="fas fa-check-circle"></i> Content Appears Legitimate
+              {% endif %}
+            </h3>
+            <p class="result-description">
+              {% if prediction == 'FAKE' %}
+              🚨 Our advanced AI analysis has identified potential misinformation markers in this content. We strongly recommend cross-referencing with multiple verified news sources and fact-checking organizations before sharing or acting on this information.
+              {% else %}
+              ✅ Our comprehensive analysis suggests this content appears to be from a legitimate source with credible information patterns. However, we always recommend verifying important information through multiple trusted sources for complete accuracy.
+              {% endif %}
+            </p>
+            <form method="POST" action="{{ url_for('get_news_details') }}">
+              <input type="hidden" name="news_text" value="{{ input_text }}">
+              <button type="submit" class="btn btn-info">
+                <i class="fas fa-info-circle"></i> Get Detailed Analysis
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- About Section -->
+  <section class="info-section" id="about">
+    <div class="container">
+      <div class="info-content">
+        <h2 class="info-title">🛡️ Trusted News Verification Platform</h2>
+        <p class="info-text">
+          NewsGuard employs cutting-edge machine learning algorithms and natural language processing 
+          to analyze news content for authenticity markers, helping combat the spread of misinformation in our digital ecosystem.
+        </p>
+        <p class="info-text">
+          Built with enterprise-grade security and privacy in mind, our platform provides reliable 
+          content verification for journalists, researchers, educators, and informed citizens worldwide.
+        </p>
+        <p class="info-text">
+          <strong>🚀 Developed by Manthan Mistry</strong> — Committed to Information Integrity and Digital Media Literacy
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <a href="/logout" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Sign Out Securely
+      </a>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Create floating particles
+    function createParticles() {
+      const particleContainer = document.getElementById('particles');
+      if (!particleContainer) return;
+      
+      // Reduce particle count for subtlety
+      for (let i = 0; i < 30; i++) { 
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 25 + 's'; // Match new animation duration
+        particle.style.animationDuration = (Math.random() * 15 + 10) + 's'; // Adjusted duration
+        particleContainer.appendChild(particle);
+      }
+    }
+
+    // Initialize particles
+    createParticles();
+
+    // Enhanced form submission with loading
+    document.getElementById('newsForm').addEventListener('submit', function(e) {
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      
+      loadingIndicator.classList.add('active');
+      analyzeBtn.disabled = true;
+      analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+    });
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      
+      const toggleBtn = document.querySelector('.theme-toggle i');
+      if (document.body.classList.contains('dark-mode')) {
+        toggleBtn.className = 'fas fa-sun';
+        localStorage.setItem('darkMode', 'enabled');
+      } else {
+        toggleBtn.className = 'fas fa-moon';
+        localStorage.setItem('darkMode', 'disabled');
+      }
+    }
+    
+    // Animate hero background fade
+{  const hero = document.querySelector('.hero-section::before');
+  if (hero) {
+    hero.style.opacity = '0';
+    setTimeout(() => {
+      hero.style.opacity = '1';
+    }, 100);
+  }
+}
+
+// Initialize theme from localStorage
+document.addEventListener("DOMContentLoaded", function () {
+  if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+    const toggleBtn = document.querySelector('.theme-toggle i');
+    if (toggleBtn) toggleBtn.className = 'fas fa-sun';
+  }
+
+  // Optional: Animate hero on load
+  const hero = document.querySelector('.hero-section');
+  if (hero) {
+    hero.style.transition = 'transform 0.5s ease';
+  }
+});
+
+
+    // Preserve dark mode setting
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+      document.querySelector('.theme-toggle i').className = 'fas fa-sun';
+    }
+
+    function clearInput() {
+      document.getElementById("news_text").value = "";
+      const resultDiv = document.getElementById("predictionResult");
+      if (resultDiv) {
+        resultDiv.style.opacity = '0';
+        resultDiv.style.transform = 'translateX(100px)';
+        setTimeout(() => {
+          resultDiv.remove();
+        }, 300);
+      }
+    }
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Enhanced form interactions
+    const textArea = document.getElementById('news_text');
+    if (textArea) {
+      textArea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.max(200, this.scrollHeight) + 'px';
+      });
+
+      // Add typing effect
+      textArea.addEventListener('focus', function() {
+        this.style.transform = 'translateY(-3px)';
+        this.style.boxShadow = '0 10px 30px rgba(30, 64, 175, 0.2)';
+      });
+
+      textArea.addEventListener('blur', function() {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = '0 0 0 4px rgba(30, 64, 175, 0.1)';
+      });
+    }
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, observerOptions);
+
+    // Observe animated elements
+    document.querySelectorAll('.trust-item, .analysis-card, .info-content').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Add mouse move parallax effect - make it more subtle
+    document.addEventListener('mousemove', (e) => {
+      const mouseX = e.clientX / window.innerWidth;
+      const mouseY = e.clientY / window.innerHeight;
+      
+      const heroSection = document.querySelector('.hero-section');
+      if (heroSection) {
+        const moveX = (mouseX - 0.5) * 20; // Reduced parallax effect
+        const moveY = (mouseY - 0.5) * 10;
+        heroSection.style.transform = `perspective(1000px) rotateX(${moveY * -0.1}deg) rotateY(${moveX * 0.1}deg) translateZ(0px)`;
+      }
+
+      // Subtle particle parallax (optional, can be removed if too much)
+      const particles = document.querySelectorAll('.particle');
+      particles.forEach((particle, index) => {
+        const speed = (index % 5 + 1) * 0.1; // Greatly reduced speed
+        const x = (mouseX - 0.5) * speed * 5; // Reduced movement
+        const y = (mouseY - 0.5) * speed * 5;
+        // Apply to a separate transform to avoid conflict with main animation
+        // This part might be tricky to combine with existing CSS animation smoothly
+        // For simplicity, this direct manipulation might be removed if it causes jitter
+        // particle.style.transform += ` translate(${x}px, ${y}px)`; 
+      });
+    });
+
+    // Reset hero transform on mouse leave
+    const hero = document.querySelector('.hero-section');
+    if (hero) {
+        hero.addEventListener('mouseleave', () => {
+            hero.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+        });
+    }
+  </script>
+</body>
+</html>
